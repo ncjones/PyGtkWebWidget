@@ -20,7 +20,7 @@
 import gtk
 import os
 import gtkweb
-import time
+import datetime
 
 window = gtk.Window()
 window.connect("destroy", gtk.main_quit)
@@ -33,8 +33,7 @@ window.set_default_size(800, 600)
 window.show_all()
 def on_click(timestamp):
 	global web_widget
-	print "clicked: ", timestamp
+	print "clicked: ", datetime.datetime.fromtimestamp(float(timestamp)/1000)
 	print "click count: " , web_widget.invoke("getClickCount")
 web_widget.subscribe("click", on_click)
 gtk.main()
-
