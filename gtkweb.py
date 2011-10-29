@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PyGtkWebWidget.  If not, see <http://www.gnu.org/licenses/>.
 
+import gtk
 import simplejson
 import webkit
 
@@ -35,6 +36,7 @@ class WebWidget(webkit.WebView):
 		self.connect("title-changed", self._on_title_changed)
 		self.load_uri(uri)
 		self._events = {}
+		self._result_stack = []
 
 	def _get_event(self, event_type):
 		if not event_type in self._events:
@@ -42,9 +44,20 @@ class WebWidget(webkit.WebView):
 		return self._events[event_type]
 
 	def _on_title_changed(self, view, frame, title):
-		event_instance = simplejson.loads(title)
-		# TODO check if data is present
-		self._get_event(event_instance["type"]).fire(event_instance["data"])
+		message = simplejson.loads(title)
+		message_type = message["message-type"]
+		message_content = message["message-content"]
+		if message_type == "event":
+			# TODO check if event data is present
+			self._handle_event(message_content["event-type"], message_content["event-data"])
+		elif message_type == "result":
+			self._handle_result(message_content["result-status"], message_content["result-value"])
+
+	def _handle_event(self, event_type, event_data):
+		self._get_event(event_type).fire(event_data)
+
+	def _handle_result(self, status, value):
+		self._result_stack.append(_InvokationResult(status == "success", value))
 
 	def subscribe(self, event_type, callback):
 		"""Subscribe to an event published by the widget."""
@@ -54,11 +67,24 @@ class WebWidget(webkit.WebView):
 	def invoke(self, function_name, *args):
 		"""Invoke a JavaScript method on the widget."""
 		# TODO use namespace for function
-		# TODO provide function return value
-		# TODO error handling
-		arguments_list = simplejson.dumps(args) if len(args) > 0 else ""
-		script = function_name + "(" + arguments_list + ")"
+		script = "GtkWebWidget.invoke(" + simplejson.dumps(function_name) + ", " + simplejson.dumps(args) + ")"
 		self.execute_script(script)
+		result = self._result_stack.pop()
+		if result.success:
+			return result.value
+		else:
+			raise InvokationFailure(result.value)
+
+class _InvokationResult(object):
+
+	def __init__(self, success, value):
+		self.success = success
+		self.value = value
+
+class InvokationFailure(Exception):
+
+	def __init__(self, javascriptError):
+		Exception.__init__(self, str(javascriptError))
 
 class _Event(object):
 

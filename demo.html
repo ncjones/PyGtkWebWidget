@@ -21,22 +21,20 @@
 <title></title>
 </head>
 <body>
-	<p id="clickable">Click Me</p>
-	<p id="click-count"></p>
+	<p id="clickable" style="cursor: pointer;">Click Me</p>
 <script src="gtkweb.js"></script>
 <script>
 (function () {
-	var count = 0,
-	handleClick = function () {
-		count += 1;
-		GtkWebWidget.fireEvent('click', count);
-	};
+	var clickCount = 0,
+		handleClick = function () {
+			clickCount += 1;
+			GtkWebWidget.fireEvent('click', new Date().getTime());
+		};
 	clickableEl = document.getElementById('clickable'),
-	clickCountEl = document.getElementById('click-count');
 	clickableEl.addEventListener('click', handleClick, false);
 	
-	updateCount = function(count) {
-		clickCountEl.innerHTML = count;
+	getClickCount = function () {
+		return clickCount;
 	};
 }());
 </script>

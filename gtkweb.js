@@ -19,26 +19,58 @@
 
 (function () {
 
+	var _sendMessage = function (messageType, messageContent) {
+		document.title = JSON.stringify({
+			"message-type": messageType,
+			"message-content": messageContent
+		});
+	};
+
 	/**
-	 * Fire an event to the GTK web view widget.
-	 * <p>
-	 * Messages are transmitted as JSON via the document title.
+	 * Notify the GTK web view widget of an event.
 	 *
 	 * @param type {String} the event type
 	 * @param data {object} the data attached to the event
 	 */
 	var fireEvent = function (type, data) {
-		document.title = JSON.stringify({
-			type: type,
-			data: data
+		_sendMessage("event", {
+			"event-type": type,
+			"event-data": data
 		});
-	}
+	};
+
+	/**
+	 * Invoke a global function and send the result to the GTK web view widget.
+	 * <p>
+	 * If invokation fails, the exception will be sent instead.
+	 *
+	 * @param functionName {String} the name of the global function.
+	 * @param args {array} the arguments to apply to the function.
+	 */
+	var invokeFunction = function (functionName, args) {
+		var f = eval(functionName),
+			result,
+			status;
+		try {
+			result = f.apply(this, args);
+			status = "success";
+		} catch (e) {
+			// TODO send entire exception, preserving stack trace
+			result = e.message;
+			status = "failure";
+		}
+		_sendMessage("result", {
+			"result-status": status,
+			"result-value": result | null
+		});
+	};
 
 	/**
 	 * GtkWebWidget JavaScript API.
 	 */
 	GtkWebWidget = {
-		fireEvent: fireEvent
+		fireEvent: fireEvent,
+		invoke: invokeFunction
 	};
 
 }());
