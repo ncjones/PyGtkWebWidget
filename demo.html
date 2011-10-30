@@ -29,7 +29,7 @@
 	var clickCount = 0,
 		handleClick = function () {
 			clickCount += 1;
-			GtkWebWidget.fireEvent('click', new Date().getTime());
+			GtkWebWidget.fire('click', new Date().getTime());
 		};
 	clickableEl = document.getElementById('clickable'),
 	clickableEl.addEventListener('click', handleClick, false);

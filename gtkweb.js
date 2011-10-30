@@ -69,7 +69,7 @@
 	 * GtkWebWidget JavaScript API.
 	 */
 	GtkWebWidget = {
-		fireEvent: fireEvent,
+		fire: fireEvent,
 		invoke: invokeFunction
 	};
 
