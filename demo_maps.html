@@ -1,0 +1,84 @@
+<!doctype html>
+<!--
+ Copyright 2011 Nathan Jones
+ 
+ This file is part of PyGtkWebWidget.
+
+ PyGtkWebWidget is free software: you can redistribute it and/or modify
+ it under the terms of the GNU General Public License as published by
+ the Free Software Foundation, either version 2 of the License, or
+ (at your option) any later version.
+
+ PyGtkWebWidget is distributed in the hope that it will be useful,
+ but WITHOUT ANY WARRANTY; without even the implied warranty of
+ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ GNU General Public License for more details.
+
+ You should have received a copy of the GNU General Public License
+ along with PyGtkWebWidget.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<html>
+<head>
+<title></title>
+<style type="text/css">
+html,
+body,
+#map-canvas {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+ }
+</style>
+<script src="http://maps.googleapis.com/maps/api/js?v=3.6&sensor=false"></script>
+<script src="gtkweb.js"></script>
+</head>
+<body>
+<div id="map-canvas" style="width:100%; height:100%"></div>
+<script>
+(function () {
+	
+	var map = new google.maps.Map(document.getElementById('map-canvas'), {
+		zoom: 12,
+		center: new google.maps.LatLng(-36.87, 174.75),
+		mapTypeId: google.maps.MapTypeId.ROADMAP
+	}),
+	
+	markers = [],
+	
+	selectedIndex = -1,
+	
+	addMarker = function (latlng) {
+		var marker = new google.maps.Marker({
+			map: map,
+			position: latlng
+		}),
+		markerIndex = markers.push(marker) - 1;
+		google.maps.event.addListener(marker, 'click', function () {
+			selectMarker(markerIndex);
+		});
+		GtkWebWidget.fire('marker-added', {
+			index: markerIndex,
+			lat: latlng.lat(),
+			lng: latlng.lng()
+		});
+	};
+	
+	selectMarker = function (index) {
+		if (index !== selectedIndex) {
+			if (selectedIndex >= 0) {
+				markers[selectedIndex].setAnimation(null);
+			}
+			markers[index].setAnimation(google.maps.Animation.BOUNCE);
+			selectedIndex = index;
+			GtkWebWidget.fire('selection-changed', index);
+		}
+	};
+	
+	google.maps.event.addListener(map, 'click', function (mouseEvent) {
+		addMarker(mouseEvent.latLng);
+	});
+	
+}());
+</script>
+</body>
+</html>
