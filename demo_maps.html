@@ -38,7 +38,8 @@ body,
 (function () {
 	
 	var map = new google.maps.Map(document.getElementById('map-canvas'), {
-        draggableCursor: 'crosshair',
+		draggableCursor: 'crosshair',
+		disableDefaultUI: true,
 		zoom: 12,
 		center: new google.maps.LatLng(-36.87, 174.75),
 		mapTypeId: google.maps.MapTypeId.ROADMAP
