@@ -34,6 +34,9 @@ class MapDemo(demo.DemoApp):
         self._marker_tree_view = self._create_tree_view()
         self._marker_tree_view.get_selection().connect("changed", self.on_marker_tree_selection_changed)
         
+    def get_title(self):
+        return "Maps Demo"
+        
     def get_content(self):
         box = gtk.HBox(homogeneous=False, spacing=0)
         box.pack_start(self._web_widget, expand=True, fill=True, padding=0)

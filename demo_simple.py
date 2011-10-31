@@ -29,6 +29,9 @@ class SimpleDemo(demo.DemoApp):
 		demo_uri = "file://" + os.path.abspath('demo_simple.html')
 		self._web_widget = gtkweb.WebWidget(demo_uri)
 		self._web_widget.subscribe("click", self._on_click)
+		
+	def get_title(self):
+		return "Simple Demo"
 	
 	def get_content(self):
 		return self._web_widget
