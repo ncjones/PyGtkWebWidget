@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Copyright 2011 Nathan Jones
 #
 # This file is part of PyGtkWebWidget.
