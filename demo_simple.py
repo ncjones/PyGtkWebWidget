@@ -32,6 +32,11 @@ class SimpleDemo(demo.DemoApp):
 		
 	def get_title(self):
 		return "Simple Demo"
+    
+	def get_description(self):
+		return """Demonstrates message passing between Python and JavaScript in an embedded HTML page.
+
+Click events are logged in the console."""
 	
 	def get_content(self):
 		return self._web_widget

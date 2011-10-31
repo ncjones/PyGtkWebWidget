@@ -36,6 +36,11 @@ class MapDemo(demo.DemoApp):
         
     def get_title(self):
         return "Maps Demo"
+    
+    def get_description(self):
+        return """Demonstrates message passing between Python and JavaScript in an embedded HTML page.
+
+Click the map to add a marker. Click a marker to select it. The map and TreeView state will be kept in sync."""
         
     def get_content(self):
         box = gtk.HBox(homogeneous=False, spacing=0)
