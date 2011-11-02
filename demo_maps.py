@@ -17,19 +17,46 @@
 # You should have received a copy of the GNU General Public License
 # along with PyGtkWebWidget.  If not, see <http://www.gnu.org/licenses/>.
 
-import demo
-import gtk
-import os
-import gtkweb
 import datetime
+import demo
+import gobject
+import gtk
+import gtkweb
+import os
+
+class MapWebWidget(gtkweb.WebWidget):
+      
+    __gsignals__ = {
+                "marker-added" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_PYOBJECT,)),
+                "marker-selection-changed" : (gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (gobject.TYPE_INT64,))
+            }
+    
+    def __init__(self):
+        gtkweb.WebWidget.__gobject_init__(self, uri="file://" + os.path.abspath("demo_maps.html"))
+    
+    def handle_event(self, event_type, event_data):
+        if event_type == "marker-added":
+            self.emit("marker-added", MapMarker(**event_data))
+        if event_type == "marker-selection-changed":
+            self.emit("marker-selection-changed", int(event_data))
+            
+    def select_marker(self, index):
+        self.invoke("selectMarker", index);
+            
+class MapMarker(object):
+    
+    def __init__(self, **kwargs):
+        self.index = int(kwargs["index"])
+        self.latitude = float(kwargs["lat"])
+        self.longitude = float(kwargs["lng"])
 
 class MapDemo(demo.DemoApp):
     
     def __init__(self):
-        demo_uri = "file://" + os.path.abspath("demo_maps.html")
-        self._web_widget = gtkweb.WebWidget(demo_uri)
-        self._web_widget.subscribe("marker-added", self.on_marker_added)
-        self._web_widget.subscribe("selection-changed", self.on_marker_selection_changed)
+        self._web_widget = MapWebWidget()
+        self._web_widget.connect("marker-added", self.on_marker_added)
+        self._web_widget.connect("marker-selection-changed", self.on_marker_selection_changed)
+        self._web_widget.render()
         self._marker_list_store = gtk.ListStore(float, float)
         self._marker_tree_view = self._create_tree_view()
         self._marker_tree_view.get_selection().connect("changed", self.on_marker_tree_selection_changed)
@@ -62,20 +89,18 @@ Click the map to add a marker. Click a marker to select it. The map and TreeView
         marker_tree_view.append_column(longitude_column)
         return marker_tree_view
 
-    def on_marker_added(self, marker):
-        index = marker["index"]
-        latitude = marker["lat"]
-        longitude = marker["lng"]
-        self._marker_list_store.insert(index, [latitude, longitude])
+    def on_marker_added(self, widget, marker):
+        self._marker_list_store.insert(marker.index, [marker.latitude, marker.longitude])
         
-    def on_marker_selection_changed(self, index):
+    def on_marker_selection_changed(self, widget, index):
         iter = self._marker_list_store.get_iter(index)
         self._marker_tree_view.get_selection().select_iter(iter)
     
     def on_marker_tree_selection_changed(self, selection):
         iter = selection.get_selected()[1]
         path = self._marker_list_store.get_path(iter)
-        self._web_widget.invoke("selectMarker", path[0])
+        index = path[0]
+        self._web_widget.select_marker(index)
 
 if __name__ == '__main__':
     map_demo = MapDemo()

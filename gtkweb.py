@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with PyGtkWebWidget.  If not, see <http://www.gnu.org/licenses/>.
 
+import gobject
 import gtk
 import simplejson
 import webkit
@@ -30,13 +31,34 @@ class WebWidget(webkit.WebView):
 
 	The widget is not thread safe.
 	"""
+	
+	__gproperties__ = {
+				"uri" : (gobject.TYPE_STRING,
+						"Document URI",
+						"The URI for the widget's HTML document.",
+						None,
+						gobject.PARAM_READWRITE)
+			}
 
-	def __init__(self, uri):
-		webkit.WebView.__init__(self)
+	def __gobject_init__(self, **kwargs):
+		webkit.WebView.__gobject_init__(self, **kwargs)
 		self.connect("title-changed", self._on_title_changed)
-		self.load_uri(uri)
-		self._events = {}
 		self._result_stack = []
+		
+	def render(self):
+		self.load_uri(self.get_property("uri"))
+		
+	def do_get_property(self, property):
+		if property.name == "uri":
+			return self.uri
+		else:
+			raise AttributeError, "Unknown property: %s" % property.name
+		
+	def do_set_property(self, property, value):
+		if property.name == "uri":
+			self.uri = value
+		else:
+			raise AttributeError, "Unknown property %s" % property.name
 
 	def _get_event(self, event_type):
 		if not event_type in self._events:
@@ -49,20 +71,15 @@ class WebWidget(webkit.WebView):
 		message_content = message["message-content"]
 		if message_type == "event":
 			# TODO check if event data is present
-			self._handle_event(message_content["event-type"], message_content["event-data"])
+			self.handle_event(message_content["event-type"], message_content["event-data"])
 		elif message_type == "result":
 			self._handle_result(message_content["result-status"], message_content["result-value"])
-
-	def _handle_event(self, event_type, event_data):
-		self._get_event(event_type).fire(event_data)
+			
+	def handle_event(self, event_type, event_data):
+		pass
 
 	def _handle_result(self, status, value):
 		self._result_stack.append(_InvokationResult(status == "success", value))
-
-	def subscribe(self, event_type, callback):
-		"""Subscribe to an event published by the widget."""
-		# TODO use GTK connect
-		self._get_event(event_type).subscribe(callback)
 
 	def invoke(self, function_name, *args):
 		"""Invoke a JavaScript method on the widget."""
@@ -74,6 +91,8 @@ class WebWidget(webkit.WebView):
 			return result.value
 		else:
 			raise InvokationFailure(result.value)
+		
+gobject.type_register(WebWidget)
 
 class _InvokationResult(object):
 
@@ -85,23 +104,3 @@ class InvokationFailure(Exception):
 
 	def __init__(self, javascriptError):
 		Exception.__init__(self, str(javascriptError))
-
-class _Event(object):
-
-    """An event which can be subscribed to for notifications."""
-
-    def __init__(self):
-        self.subscribers = []
-
-    def subscribe(self, callback):
-        """Subscribe a callback function to the event."""
-        self.subscribers.append(callback)
-
-    def unsubscribe(self, callback):
-        """Unsubscribe a callback from the event."""
-        self.subscribers.remove(callback)
-
-    def fire(self, *args, **kwargs):
-        """Notify all subscribers that the event has occurred."""
-        return [subscriber(*args, **kwargs) for subscriber in self.subscribers]
-
