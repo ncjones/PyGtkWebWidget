@@ -15,8 +15,8 @@ Copy gtkweb.py and gtkweb.js into your source tree.
 
 Dependencies
 ------------
-pygtk 2.22
-pywebkitgtk 1.1.8
+* pygtk 2.22
+* pywebkitgtk 1.1.8
 
 Examples
 --------
