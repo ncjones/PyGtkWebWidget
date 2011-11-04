@@ -39,7 +39,7 @@ class SimpleWebWidget(gtkweb.WebWidget):
 			date_time = datetime.datetime.fromtimestamp(timestamp)
 			self.emit("click", date_time)
 			
-	def getClickCount(self):
+	def get_click_count(self):
 		return self.invoke("getClickCount")
 			
 class SimpleDemo(demo.DemoApp):
