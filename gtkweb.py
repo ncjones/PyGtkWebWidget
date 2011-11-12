@@ -58,7 +58,7 @@ class WebWidget(webkit.WebView):
 		if property.name == "uri":
 			self.uri = value
 		else:
-			raise AttributeError, "Unknown property %s" % property.name
+			raise AttributeError, "Unknown property: %s" % property.name
 
 	def _get_event(self, event_type):
 		if not event_type in self._events:
