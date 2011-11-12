@@ -67,6 +67,8 @@ class MapDemo(demo.DemoApp):
     def get_description(self):
         return """Demonstrates message passing between Python and JavaScript in an embedded HTML page.
 
+On the left is a WebWidget that allows points to be marked on a map. On the right is a GTK TreeView.
+
 Click the map to add a marker. Click a marker to select it. The map and TreeView state will be kept in sync."""
         
     def get_content(self):
