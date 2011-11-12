@@ -74,7 +74,7 @@
 		}
 		_sendMessage("result", {
 			"result-status": status,
-			"result-value": result | null
+			"result-value": result || null
 		});
 	};
 
