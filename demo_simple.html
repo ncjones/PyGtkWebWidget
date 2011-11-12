@@ -34,9 +34,11 @@
 	clickableEl = document.getElementById('clickable'),
 	clickableEl.addEventListener('click', handleClick, false);
 	
-	getClickCount = function () {
-		return clickCount;
-	};
+	GtkWebWidget.register({
+		getClickCount: function () {
+			return clickCount;
+		}
+	});
 }());
 </script>
 </body>

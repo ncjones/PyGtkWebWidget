@@ -83,7 +83,6 @@ class WebWidget(webkit.WebView):
 
 	def invoke(self, function_name, *args):
 		"""Invoke a JavaScript method on the widget."""
-		# TODO use namespace for function
 		script = "GtkWebWidget.invoke(" + simplejson.dumps(function_name) + ", " + simplejson.dumps(args) + ")"
 		self.execute_script(script)
 		result = self._result_stack.pop()

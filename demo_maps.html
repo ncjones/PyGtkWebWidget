@@ -63,7 +63,7 @@ body,
 			lat: latlng.lat(),
 			lng: latlng.lng()
 		});
-	};
+	},
 	
 	selectMarker = function (index) {
 		if (index !== selectedIndex) {
@@ -80,6 +80,9 @@ body,
 		addMarker(mouseEvent.latLng);
 	});
 	
+	GtkWebWidget.register({
+			selectMarker: selectMarker
+	});
 }());
 </script>
 </body>

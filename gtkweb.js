@@ -18,13 +18,25 @@
  */
 
 (function () {
+	
+	var impl = {},
+	
+	/**
+	 * Register an object that implements the specific widget. This object
+	 * provides the methods that can be invoked on the widget.
+	 *
+	 * @param obj {object} the widget implementation.
+	 */
+	registerImplementation = function (obj) {
+		impl = obj;
+	},
 
-	var _sendMessage = function (messageType, messageContent) {
+	_sendMessage = function (messageType, messageContent) {
 		document.title = JSON.stringify({
 			"message-type": messageType,
 			"message-content": messageContent
 		});
-	};
+	},
 
 	/**
 	 * Notify the GTK web view widget of an event.
@@ -32,27 +44,28 @@
 	 * @param type {String} the event type
 	 * @param data {object} the data attached to the event
 	 */
-	var fireEvent = function (type, data) {
+	fireEvent = function (type, data) {
 		_sendMessage("event", {
 			"event-type": type,
 			"event-data": data
 		});
-	};
+	},
 
 	/**
-	 * Invoke a global function and send the result to the GTK web view widget.
+	 * Invoke a method on the JavaScript widget implementation and send the
+	 * result to the GTK web view widget.
 	 * <p>
 	 * If invokation fails, the exception will be sent instead.
 	 *
-	 * @param functionName {String} the name of the global function.
-	 * @param args {array} the arguments to apply to the function.
+	 * @param methodName {String} the name of the method to invoke.
+	 * @param args {array} the arguments to apply to the method.
 	 */
-	var invokeFunction = function (functionName, args) {
-		var f = eval(functionName),
+	invokeMethod = function (methodName, args) {
+		var f = impl[methodName],
 			result,
 			status;
 		try {
-			result = f.apply(this, args);
+			result = f.apply(impl, args);
 			status = "success";
 		} catch (e) {
 			// TODO send entire exception, preserving stack trace
@@ -69,8 +82,9 @@
 	 * GtkWebWidget JavaScript API.
 	 */
 	GtkWebWidget = {
+		register: registerImplementation,
 		fire: fireEvent,
-		invoke: invokeFunction
+		invoke: invokeMethod
 	};
 
 }());
