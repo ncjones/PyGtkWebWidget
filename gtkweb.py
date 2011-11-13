@@ -77,8 +77,6 @@ class WebWidget(gtk.Bin):
 		else:
 			raise InvokationFailure(result.value)
 		
-gobject.type_register(WebWidget)
-
 class _InvokationResult(object):
 
 	def __init__(self, success, value):
