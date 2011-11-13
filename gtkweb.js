@@ -44,7 +44,7 @@
 	fireEvent = function (type, data) {
 		_sendMessage("event", {
 			"event-type": type,
-			"event-data": data
+			"event-data": data || null
 		});
 	},
 
@@ -86,8 +86,8 @@
 		 * <p>
 		 * This method should only be called from JavaScript code.
 		 *
-		 * @param type {String} the event type
-		 * @param data {object} the data attached to the event
+		 * @param type {String} the event type.
+		 * @param data {object} the data attached to the event (optional).
 		 */
 		fire: fireEvent,
 		

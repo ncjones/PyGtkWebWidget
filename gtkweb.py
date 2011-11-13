@@ -70,7 +70,6 @@ class WebWidget(gtk.Bin):
 		message_type = message["message-type"]
 		message_content = message["message-content"]
 		if message_type == "event":
-			# TODO check if event data is present
 			self.handle_event(message_content["event-type"], message_content["event-data"])
 		elif message_type == "result":
 			self._handle_result(message_content["result-status"], message_content["result-value"])
