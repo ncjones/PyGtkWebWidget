@@ -31,7 +31,7 @@ class SimpleWebWidget(gtkweb.WebWidget):
 			}
 	
 	def __init__(self):
-		gtkweb.WebWidget.__gobject_init__(self, uri="file://" + os.path.abspath("demo_simple.html"))
+		gtkweb.WebWidget.__init__(self, uri="file://" + os.path.abspath("demo_simple.html"))
 	
 	def handle_event(self, event_type, event_data):
 		if event_type == "click":
@@ -47,7 +47,6 @@ class SimpleDemo(demo.DemoApp):
 	def __init__(self):
 		self._web_widget = SimpleWebWidget()
 		self._web_widget.connect("click", self._on_click)
-		self._web_widget.render()
 		
 	def get_title(self):
 		return "Simple Demo"

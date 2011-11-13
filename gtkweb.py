@@ -20,10 +20,8 @@ import gtk
 import simplejson
 import webkit
 
-class WebWidget(webkit.WebView):
+class WebWidget(gtk.Bin):
 
-	# TODO don't extend WebView
-	
 	"""A GTK widget that is rendered by a web page.
 
 	The widget provides an interface to a JavaScript object within the page
@@ -40,14 +38,22 @@ class WebWidget(webkit.WebView):
 						gobject.PARAM_READWRITE)
 			}
 
-	def __gobject_init__(self, **kwargs):
-		webkit.WebView.__gobject_init__(self, **kwargs)
-		self.connect("title-changed", self._on_title_changed)
+	def __init__(self, **kwargs):
+		gtk.Bin.__gobject_init__(self, **kwargs)
+		self._web_view = webkit.WebView()
+		self._web_view.load_uri(self.get_property("uri"))
+		self._web_view.connect("title-changed", self._on_title_changed)
+		self.add(self._web_view)
 		self._result_stack = []
 		
-	def render(self):
-		self.load_uri(self.get_property("uri"))
-		
+	def do_size_request(self, req):
+	    (w, h) = self._web_view.size_request()
+	    req.width = w
+	    req.height = h
+			
+	def do_size_allocate(self, alloc):
+	    self._web_view.size_allocate(alloc)
+	    
 	def do_get_property(self, property):
 		if property.name == "uri":
 			return self.uri
@@ -84,7 +90,7 @@ class WebWidget(webkit.WebView):
 	def invoke(self, function_name, *args):
 		"""Invoke a JavaScript method on the widget."""
 		script = "GtkWebWidget.invoke(" + simplejson.dumps(function_name) + ", " + simplejson.dumps(args) + ")"
-		self.execute_script(script)
+		self._web_view.execute_script(script)
 		result = self._result_stack.pop()
 		if result.success:
 			return result.value

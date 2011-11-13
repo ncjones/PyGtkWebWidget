@@ -32,7 +32,7 @@ class MapWebWidget(gtkweb.WebWidget):
             }
     
     def __init__(self):
-        gtkweb.WebWidget.__gobject_init__(self, uri="file://" + os.path.abspath("demo_maps.html"))
+        gtkweb.WebWidget.__init__(self, uri="file://" + os.path.abspath("demo_maps.html"))
     
     def handle_event(self, event_type, event_data):
         if event_type == "marker-added":
@@ -56,7 +56,6 @@ class MapDemo(demo.DemoApp):
         self._web_widget = MapWebWidget()
         self._web_widget.connect("marker-added", self.on_marker_added)
         self._web_widget.connect("marker-selection-changed", self.on_marker_selection_changed)
-        self._web_widget.render()
         self._marker_list_store = gtk.ListStore(float, float)
         self._marker_tree_view = self._create_tree_view()
         self._marker_tree_view.get_selection().connect("changed", self.on_marker_tree_selection_changed)
