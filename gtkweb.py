@@ -30,18 +30,10 @@ class WebWidget(gtk.Bin):
 	The widget is not thread safe.
 	"""
 	
-	__gproperties__ = {
-				"uri" : (gobject.TYPE_STRING,
-						"Document URI",
-						"The URI for the widget's HTML document.",
-						None,
-						gobject.PARAM_READWRITE)
-			}
-
-	def __init__(self, **kwargs):
-		gtk.Bin.__gobject_init__(self, **kwargs)
+	def __init__(self, uri):
+		gtk.Bin.__gobject_init__(self)
 		self._web_view = webkit.WebView()
-		self._web_view.load_uri(self.get_property("uri"))
+		self._web_view.load_uri(uri)
 		self._web_view.connect("title-changed", self._on_title_changed)
 		self.add(self._web_view)
 		self._result_stack = []
@@ -54,18 +46,6 @@ class WebWidget(gtk.Bin):
 	def do_size_allocate(self, alloc):
 	    self._web_view.size_allocate(alloc)
 	    
-	def do_get_property(self, property):
-		if property.name == "uri":
-			return self.uri
-		else:
-			raise AttributeError, "Unknown property: %s" % property.name
-		
-	def do_set_property(self, property, value):
-		if property.name == "uri":
-			self.uri = value
-		else:
-			raise AttributeError, "Unknown property: %s" % property.name
-
 	def _get_event(self, event_type):
 		if not event_type in self._events:
 			self._events[event_type] = _Event()

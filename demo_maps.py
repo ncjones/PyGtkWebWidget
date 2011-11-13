@@ -32,7 +32,7 @@ class MapWebWidget(gtkweb.WebWidget):
             }
     
     def __init__(self):
-        gtkweb.WebWidget.__init__(self, uri="file://" + os.path.abspath("demo_maps.html"))
+        gtkweb.WebWidget.__init__(self, "file://" + os.path.abspath("demo_maps.html"))
     
     def handle_event(self, event_type, event_data):
         if event_type == "marker-added":
