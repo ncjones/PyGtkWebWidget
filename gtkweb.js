@@ -21,12 +21,6 @@
 	
 	var impl = {},
 	
-	/**
-	 * Register an object that implements the specific widget. This object
-	 * provides the methods that can be invoked on the widget.
-	 *
-	 * @param obj {object} the widget implementation.
-	 */
 	registerImplementation = function (obj) {
 		impl = obj;
 	},
@@ -38,12 +32,6 @@
 		});
 	},
 
-	/**
-	 * Notify the GTK web view widget of an event.
-	 *
-	 * @param type {String} the event type
-	 * @param data {object} the data attached to the event
-	 */
 	fireEvent = function (type, data) {
 		_sendMessage("event", {
 			"event-type": type,
@@ -51,15 +39,6 @@
 		});
 	},
 
-	/**
-	 * Invoke a method on the JavaScript widget implementation and send the
-	 * result to the GTK web view widget.
-	 * <p>
-	 * If invokation fails, the exception will be sent instead.
-	 *
-	 * @param methodName {String} the name of the method to invoke.
-	 * @param args {array} the arguments to apply to the method.
-	 */
 	invokeMethod = function (methodName, args) {
 		var f = impl[methodName],
 			result,
@@ -82,9 +61,40 @@
 	 * GtkWebWidget JavaScript API.
 	 */
 	GtkWebWidget = {
+			
+		/**
+		 * Register an object that implements the specific widget. The object
+		 * provides the methods that can be invoked on the widget.
+		 * <p>
+		 * This method should only be called from JavaScript code.
+		 *
+		 * @param obj {object} the widget implementation.
+		 */
 		register: registerImplementation,
+		
+		/**
+		 * Notify the GTK web view widget of an event.
+		 * <p>
+		 * This method should only be called from JavaScript code.
+		 *
+		 * @param type {String} the event type
+		 * @param data {object} the data attached to the event
+		 */
 		fire: fireEvent,
+		
+		/**
+		 * Invoke a method on the JavaScript widget implementation and send the
+		 * result to the GTK web view widget.
+		 * <p>
+		 * If invokation fails, the exception will be sent instead.
+		 * <p>
+		 * This method should never be called directly from JavaScript code.
+		 *
+		 * @param methodName {String} the name of the method to invoke.
+		 * @param args {array} the arguments to apply to the method.
+		 */
 		invoke: invokeMethod
+		
 	};
 
 }());
