@@ -21,14 +21,23 @@
 	
 	var impl = {},
 	
+	forceTitleChange = false,
+	
 	registerImplementation = function (obj) {
 		impl = obj;
 	},
 
 	_sendMessage = function (messageType, messageContent) {
+		forceTitleChange = !forceTitleChange;
 		document.title = JSON.stringify({
 			"message-type": messageType,
-			"message-content": messageContent
+			"message-content": messageContent,
+			/*
+			 * Two consecutive identical messages will not trigger a title change event
+			 * so we force the title to change by including the toggled "force change"
+			 * flag in the message.
+			 */
+			"_": forceTitleChange
 		});
 	},
 
